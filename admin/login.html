@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login de Administrador</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            width: 350px;
+            padding: 30px;
+            /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */ /* W3.CSS já tem w3-card */
+            text-align: center;
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+            display: none; /* Escondido por padrão */
+        }
+    </style>
+</head>
+<body>
+    <div class="w3-card-4 login-container w3-white">
+        <h2 class="w3-text-teal">Login de Administrador</h2>
+        <form id="loginForm">
+            <p>
+                <label class="w3-text-grey"><b>Usuário</b></label>
+                <input class="w3-input w3-border" type="text" id="username" name="username" required>
+            </p>
+            <p>
+                <label class="w3-text-grey"><b>Senha</b></label>
+                <input class="w3-input w3-border" type="password" id="password" name="password" required>
+            </p>
+            <p>
+                <button type="submit" class="w3-button w3-blue w3-round-large w3-block">Entrar</button>
+            </p>
+            <p id="errorMessage" class="error-message"></p>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Impede o envio padrão do formulário
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+
+            errorMessage.style.display = 'none'; // Esconde a mensagem de erro anterior
+
+            try {
+                const response = await fetch('../api/login.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username: username, password: password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Login bem-sucedido, redireciona para o painel
+                    window.location.href = 'painel.html';
+                } else {
+                    errorMessage.textContent = data.message;
+                    errorMessage.style.display = 'block'; // Mostra a mensagem de erro
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Erro ao conectar ao servidor.';
+                errorMessage.style.display = 'block';
+                console.error('Erro:', error);
+            }
+        });
+    </script>
+</body>
+</html>

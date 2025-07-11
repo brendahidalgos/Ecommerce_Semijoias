@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Produto</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            width: 450px;
+            padding: 30px;
+            /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */ /* W3.CSS já tem w3-card */
+            text-align: center;
+        }
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="w3-card-4 container w3-white">
+        <h1 class="w3-text-teal">Cadastrar Novo Produto</h1>
+        <form id="cadastrarProdutoForm">
+            <p>
+                <label class="w3-text-grey"><b>Nome do Produto</b></label>
+                <input class="w3-input w3-border" type="text" id="nome" name="nome" required>
+            </p>
+            <p>
+                <label class="w3-text-grey"><b>Descrição</b></label>
+                <textarea class="w3-input w3-border" id="descricao" name="descricao"></textarea>
+            </p>
+            <p>
+                <label class="w3-text-grey"><b>Preço (R$)</b></label>
+                <input class="w3-input w3-border" type="number" id="preco" name="preco" step="0.01" required>
+            </p>
+            <p>
+                <label class="w3-text-grey"><b>Quantidade</b></label>
+                <input class="w3-input w3-border" type="number" id="quantidade" name="quantidade" required>
+            </p>
+            <p>
+                <button type="submit" class="w3-button w3-green w3-round-large w3-block">Cadastrar Produto <i class="fa fa-upload"></i></button>
+            </p>
+            <div id="message" class="w3-panel w3-border message" style="display:none;"></div>
+        </form>
+        <p><a href="painel.html" class="w3-button w3-light-grey w3-round-large w3-margin-top"><i class="fa fa-arrow-left"></i> Voltar ao Painel</a></p>
+    </div>
+
+    <script>
+        document.getElementById('cadastrarProdutoForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const nome = document.getElementById('nome').value;
+            const descricao = document.getElementById('descricao').value;
+            const preco = parseFloat(document.getElementById('preco').value);
+            const quantidade = parseInt(document.getElementById('quantidade').value);
+            const messageDiv = document.getElementById('message');
+
+            // Limpa mensagens anteriores
+            messageDiv.style.display = 'none';
+            messageDiv.className = 'w3-panel w3-border message';
+
+            const produtoData = {
+                nome: nome,
+                descricao: descricao,
+                preco: preco,
+                quantidade: quantidade
+            };
+
+            try {
+                const response = await fetch('../api/cadastrar.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(produtoData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    messageDiv.classList.add('success');
+                    messageDiv.textContent = 'Produto cadastrado com sucesso!';
+                    messageDiv.style.display = 'block';
+                    document.getElementById('cadastrarProdutoForm').reset(); // Limpa o formulário
+                } else {
+                    messageDiv.classList.add('error');
+                    messageDiv.textContent = 'Erro ao cadastrar produto: ' + data.message;
+                    messageDiv.style.display = 'block';
+                }
+            } catch (error) {
+                messageDiv.classList.add('error');
+                messageDiv.textContent = 'Erro ao conectar ao servidor.';
+                messageDiv.style.display = 'block';
+                console.error('Erro:', error);
+            }
+        });
+    </script>
+</body>
+</html>

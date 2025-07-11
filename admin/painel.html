@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Administração</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        .w3-sidebar {
+            width: 200px;
+            background-color: #333;
+            color: white;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+        .w3-main {
+            margin-left: 200px; /* Mesma largura da sidebar */
+            padding: 20px;
+            background-color: #fff;
+            margin-top: 20px;
+            margin-right: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .w3-bar-item.w3-button {
+            text-align: left;
+        }
+        .product-list th {
+            background-color: #007bff;
+            color: white;
+        }
+        .product-list tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="w3-sidebar w3-bar-block w3-collapse w3-card-2 w3-animate-left" id="mySidebar">
+        <button class="w3-bar-item w3-button w3-large w3-hide-large" onclick="w3_close()">Fechar &times;</button>
+        <h3 class="w3-bar-item w3-text-teal w3-center">Admin Panel</h3>
+        <a href="painel.html" class="w3-bar-item w3-button"><i class="fa fa-home"></i> Início</a>
+        <a href="cadastrar-produto.html" class="w3-bar-item w3-button"><i class="fa fa-plus-square"></i> Cadastrar Produto</a>
+        <a href="#" id="logoutButton" class="w3-bar-item w3-button w3-red"><i class="fa fa-sign-out"></i> Sair</a>
+    </div>
+
+    <div class="w3-main" id="mainContent">
+        <div class="w3-teal">
+            <button class="w3-button w3-teal w3-xlarge w3-hide-large" onclick="w3_open()">&#9776;</button>
+            <div class="w3-container">
+                <h1>Painel de Administração</h1>
+            </div>
+        </div>
+        
+        <div class="w3-container w3-margin-top">
+            <p>Aqui você pode gerenciar seus produtos.</p>
+
+            <a href="cadastrar-produto.html" class="w3-button w3-green w3-round-large w3-margin-bottom">Adicionar Novo Produto <i class="fa fa-plus"></i></a>
+
+            <h3 class="w3-text-grey">Lista de Produtos</h3>
+            <table class="w3-table-all w3-hoverable product-list">
+                <thead>
+                    <tr class="w3-blue">
+                        <th>ID</th>
+                        <th>Nome do Produto</th>
+                        <th>Preço</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="productTableBody">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Funções para abrir/fechar sidebar em telas pequenas
+        function w3_open() {
+            document.getElementById("mySidebar").style.display = "block";
+            document.getElementById("mainContent").style.marginLeft = "200px";
+        }
+        function w3_close() {
+            document.getElementById("mySidebar").style.display = "none";
+            document.getElementById("mainContent").style.marginLeft = "0";
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchProducts);
+        document.getElementById('logoutButton').addEventListener('click', logout);
+
+        async function fetchProducts() {
+            try {
+                const response = await fetch('../api/produtos.php');
+                const products = await response.json();
+                const productTableBody = document.getElementById('productTableBody');
+                productTableBody.innerHTML = ''; // Limpa a tabela antes de adicionar novos dados
+
+                if (products.length === 0) {
+                    productTableBody.innerHTML = '<tr><td colspan="4" class="w3-center">Nenhum produto encontrado.</td></tr>';
+                    return;
+                }
+
+                products.forEach(product => {
+                    const row = productTableBody.insertRow();
+                    row.innerHTML = `
+                        <td>${product.id}</td>
+                        <td>${product.nome}</td>
+                        <td>R$ ${parseFloat(product.preco).toFixed(2)}</td>
+                        <td class="w3-center">
+                            <a href="editar-produto.html?id=${product.id}" class="w3-button w3-small w3-teal w3-round-large w3-margin-right"><i class="fa fa-pencil"></i> Editar</a>
+                            <a href="#" onclick="deleteProduct(${product.id})" class="w3-button w3-small w3-red w3-round-large"><i class="fa fa-trash"></i> Excluir</a>
+                        </td>
+                    `;
+                });
+            } catch (error) {
+                console.error('Erro ao buscar produtos:', error);
+                document.getElementById('productTableBody').innerHTML = '<tr><td colspan="4" class="w3-center w3-text-red">Erro ao carregar produtos.</td></tr>';
+            }
+        }
+
+        async function deleteProduct(productId) {
+            if (confirm(`Tem certeza que deseja excluir o produto com ID ${productId}?`)) {
+                try {
+                    const response = await fetch('../api/excluir.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ id: productId })
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        alert('Produto excluído com sucesso!');
+                        fetchProducts(); // Recarrega a lista de produtos
+                    } else {
+                        alert('Erro ao excluir produto: ' + result.message);
+                    }
+                } catch (error) {
+                    console.error('Erro ao excluir produto:', error);
+                    alert('Erro ao conectar ao servidor para excluir produto.');
+                }
+            }
+        }
+
+        function logout() {
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
