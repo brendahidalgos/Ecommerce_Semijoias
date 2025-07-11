@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carrinho - Loja de Semijoias</title>
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+</head>
+<body onload="carregarCarrinho()">
+
+  <header class="w3-bar w3-white w3-padding w3-card">
+    <a href="index.html" class="w3-bar-item w3-button">Início</a>
+    <a href="produtos.html" class="w3-bar-item w3-button">Produtos</a>
+    <a href="faq.html" class="w3-bar-item w3-button">FAQ</a>
+    <a href="contato.html" class="w3-bar-item w3-button">Contato</a>
+    <a href="carrinho.html" class="w3-bar-item w3-button w3-black w3-right">🛒 Carrinho</a>
+  </header>
+
+  <div class="w3-container w3-padding-64">
+    <h2>Carrinho de Compras</h2>
+    <table class="w3-table-all w3-hoverable" id="tabela-carrinho">
+      <tr class="w3-light-grey">
+        <th>Produto</th>
+        <th>Quantidade</th>
+        <th>Preço</th>
+        <th>Total</th>
+        <th>Remover</th>
+      </tr>
+    </table>
+    <p class="w3-right w3-xlarge" id="total">Total: R$ 0,00</p>
+    <br><br>
+    <button class="w3-button w3-black" onclick="finalizarCompra()">Finalizar Compra</button>
+  </div>
+
+  <footer class="w3-center w3-dark-grey w3-padding-32">
+    <p>&copy; 2025 Loja de Semijoias</p>
+  </footer>
+
+  <script>
+    function carregarCarrinho() {
+      const carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
+      const tabela = document.getElementById('tabela-carrinho');
+      let total = 0;
+
+      carrinho.forEach((item, index) => {
+        const subtotal = item.preco * item.quantidade;
+        total += subtotal;
+
+        const linha = tabela.insertRow(-1);
+        linha.insertCell(0).innerText = item.nome;
+        linha.insertCell(1).innerText = item.quantidade;
+        linha.insertCell(2).innerText = `R$ ${item.preco.toFixed(2)}`;
+        linha.insertCell(3).innerText = `R$ ${subtotal.toFixed(2)}`;
+        linha.insertCell(4).innerHTML = `<button class='w3-button w3-red w3-small' onclick='removerItem(${index})'>X</button>`;
+      });
+
+      document.getElementById('total').innerText = `Total: R$ ${total.toFixed(2)}`;
+    }
+
+    function removerItem(index) {
+      const carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
+      carrinho.splice(index, 1);
+      localStorage.setItem('carrinho', JSON.stringify(carrinho));
+      location.reload();
+    }
+
+    function finalizarCompra() {
+      alert("Compra finalizada! Obrigado pela preferência.");
+      localStorage.removeItem('carrinho');
+      location.reload();
+    }
+  </script>
+
+</body>
+</html>

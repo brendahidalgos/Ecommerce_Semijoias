@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Loja de Semijoias</title>
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Topo com logo e menu -->
+  <header class="w3-bar w3-white w3-padding w3-card">
+    <a href="index.html" class="w3-bar-item w3-button">Início</a>
+    <a href="produtos.html" class="w3-bar-item w3-button">Produtos</a>
+    <a href="faq.html" class="w3-bar-item w3-button">FAQ</a>
+    <a href="contato.html" class="w3-bar-item w3-button">Contato</a>
+    <a href="carrinho.html" class="w3-bar-item w3-button w3-right">🛒 Carrinho</a>
+  </header>
+
+  <!-- Banner principal -->
+  <div class="w3-display-container">
+    <img src="img/banner.jpeg" alt="Banner" style="width:100%; max-height:500px; object-fit:cover;">
+    <div class="w3-display-middle w3-center">
+      <h1 class="w3-xxxlarge w3-text-white w3-wide titulo-banner">Coleção Elegância</h1>
+      <p class="w3-large w3-text-white">Descubra as novidades em semijoias exclusivas</p>
+      <a href="produtos.html" class="w3-button w3-black w3-padding-large w3-margin-top">Ver Coleção</a>
+    </div>
+  </div>
+
+  <!-- Produtos em destaque -->
+  <section class="w3-container w3-padding-64">
+    <h2 class="w3-center w3-text-grey">Destaques</h2>
+    <div class="w3-row-padding w3-margin-top">
+      <div class="w3-third">
+        <div class="w3-card-4">
+          <img src="img/produto1.jpg" style="width:100%">
+          <div class="w3-container">
+            <h4>Brinco Zircônia</h4>
+            <p>R$ 89,90</p>
+            <button onclick="adicionarCarrinho('Brinco Zircônia', 89.90)" class="w3-button w3-black">Comprar</button>
+          </div>
+        </div>
+      </div>
+      <div class="w3-third">
+        <div class="w3-card-4">
+          <img src="img/produto2.jpg" style="width:100%">
+          <div class="w3-container">
+            <h4>Colar Pérola</h4>
+            <p>R$ 129,00</p>
+            <button onclick="adicionarCarrinho('Colar Pérola', 129.00)" class="w3-button w3-black">Comprar</button>
+          </div>
+        </div>
+      </div>
+      <div class="w3-third">
+        <div class="w3-card-4">
+          <img src="img/produto3.jpg" style="width:100%">
+          <div class="w3-container">
+            <h4>Pulseira Dourada</h4>
+            <p>R$ 99,90</p>
+            <button onclick="adicionarCarrinho('Pulseira Dourada', 99.90)" class="w3-button w3-black">Comprar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Rodapé -->
+  <footer class="w3-center w3-dark-grey w3-padding-32">
+    <p>&copy; 2025 Loja de Semijoias | Instagram: <a href="https://instagram.com/lotusestrelado" target="_blank">@lotusestrelado</a></p>
+  </footer>
+
+  <!-- Script do carrinho -->
+  <script>
+    function adicionarCarrinho(nome, preco) {
+      let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
+      const index = carrinho.findIndex(item => item.nome === nome);
+      if (index >= 0) {
+        carrinho[index].quantidade += 1;
+      } else {
+        carrinho.push({ nome, preco, quantidade: 1 });
+      }
+      localStorage.setItem('carrinho', JSON.stringify(carrinho));
+      alert("Produto adicionado ao carrinho.");
+    }
+  </script>
+
+</body>
+</html>
